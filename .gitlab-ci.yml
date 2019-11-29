@@ -1,0 +1,38 @@
+#GitLab usus docker in background, need to specify version image (recent)
+#
+image: node:latest
+
+#caches directory and .yarn
+cache:
+  paths:
+    - node_modules/
+    - .yarn
+
+#tells GitLab to install all packages before running
+before_script:
+ - apt-get update -qq && apt-get install
+
+
+stages:
+  - build
+  - test
+# install dependencies    #- npm install    
+build:
+  stage: build
+  before_script:
+   - yarn config set cache-folder .yarn
+   - yarn install
+  script:
+    - echo "building"
+    - yarn test:build
+# run test    
+    #these cause infinit loop
+    #- yarn test #- npm test
+test:
+  stage: test
+  before_script:
+   - yarn config set cache-folder .yarn
+   - yarn install 
+  script:
+    - echo "testing"
+    - yarn test:ci
